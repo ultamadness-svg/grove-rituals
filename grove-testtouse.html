@@ -1,0 +1,148 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Grove Ritual Preview</title>
+  <style>
+    body {
+      font-family: 'Georgia', serif;
+      background-color: #f4f0ea;
+      color: #333;
+      padding: 2rem;
+    }
+    #grove-inhabitants {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+    }
+    .hemisphere-column {
+      flex: 1;
+      background: #fff;
+      border: 2px solid #ccc;
+      padding: 1rem;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .inhabitant-card {
+      margin-top: 1rem;
+    }
+    .inhabitant-card img {
+      width: 100%;
+      max-width: 300px;
+      border-radius: 6px;
+    }
+    .ritual-button {
+      display: inline-block;
+      margin-top: 0.5rem;
+      padding: 0.5rem 1rem;
+      background-color: #6b4f3b;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 4px;
+    }
+    .guardian {
+      border: 2px dashed #a36;
+      background-color: #fdf6f9;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Grove Ritual Preview</h1>
+<div id="grove-inhabitants">
+  <div class="hemisphere-column">
+    <h2>Southern Hemisphere</h2>
+    <div id="northern-inhabitant"></div>
+  </div>
+  <div class="hemisphere-column">
+    <h2>Northern Hemisphere</h2>
+    <div id="southern-inhabitant"></div>
+  </div>
+</div>
+
+
+<script>
+  const today = new Date();
+  const realMonth = today.getMonth(); // 0 = Jan, 11 = Dec
+  const day = today.getDate();
+  const key = `${realMonth + 1}-${day}`;
+
+  const seasonalMonthNorthern = (realMonth + 6) % 12; // June = 0
+  const seasonalMonthSouthern = (realMonth + 11) % 12; // December = 0
+
+  const inhabitants = {
+    northern: {
+      0: { name: "Gnomes", image: "gnomes.png", ritualLink: "/rituals/gnomes" },
+      1: { name: "Little People", image: "little-people.png", ritualLink: "/rituals/little-people" },
+      2: { name: "Hearth-quins", image: "hearth-quins.png", ritualLink: "/rituals/hearth-quins" },
+      3: { name: "Ember-Keepers", image: "ember-keepers.png", ritualLink: "/rituals/ember-keepers" },
+      4: { name: "Memory-Carvers", image: "memory-carvers.png", ritualLink: "/rituals/memory-carvers" },
+      5: { name: "Veil-Walkers", image: "veil-walkers.png", ritualLink: "/rituals/veil-walkers" },
+      6: { name: "Tide-Watchers", image: "tide-watchers.png", ritualLink: "/rituals/tide-watchers" },
+      7: { name: "Salt-Weavers", image: "salt-weavers.png", ritualLink: "/rituals/salt-weavers" },
+      8: { name: "Moon-Callers", image: "moon-callers.png", ritualLink: "/rituals/moon-callers" },
+      9: { name: "Bloomkins", image: "bloomkins.png", ritualLink: "/rituals/bloomkins" },
+      10: { name: "Whisper-Wings", image: "whisper-wings.png", ritualLink: "/rituals/whisper-wings" },
+      11: { name: "Root-Tenders", image: "root-tenders.png", ritualLink: "/rituals/root-tenders" }
+    },
+    southern: {
+      0: { name: "Gnomes", image: "gnomes.png", ritualLink: "/rituals/gnomes" },
+      1: { name: "Little People", image: "little-people.png", ritualLink: "/rituals/little-people" },
+      2: { name: "Hearth-quins", image: "hearth-quins.png", ritualLink: "/rituals/hearth-quins" },
+      3: { name: "Ember-Keepers", image: "ember-keepers.png", ritualLink: "/rituals/ember-keepers" },
+      4: { name: "Memory-Carvers", image: "memory-carvers.png", ritualLink: "/rituals/memory-carvers" },
+      5: { name: "Veil-Walkers", image: "veil-walkers.png", ritualLink: "/rituals/veil-walkers" },
+      6: { name: "Tide-Watchers", image: "tide-watchers.png", ritualLink: "/rituals/tide-watchers" },
+      7: { name: "Salt-Weavers", image: "salt-weavers.png", ritualLink: "/rituals/salt-weavers" },
+      8: { name: "Moon-Callers", image: "moon-callers.png", ritualLink: "/rituals/moon-callers" },
+      9: { name: "Bloomkins", image: "bloomkins.png", ritualLink: "/rituals/bloomkins" },
+      10: { name: "Whisper-Wings", image: "whisper-wings.png", ritualLink: "/rituals/whisper-wings" },
+      11: { name: "Root-Tenders", image: "root-tenders.png", ritualLink: "/rituals/root-tenders" }
+    },
+    guardians: {
+      northern: {
+        "3-21": { name: "Seedbearer", image: "seedbearer.png", ritualLink: "/rituals/seedbearer" },
+        "6-21": { name: "Flamewalker", image: "flamewalker.png", ritualLink: "/rituals/flamewalker" },
+        "9-21": { name: "Emberseer", image: "emberseer.png", ritualLink: "/rituals/emberseer" },
+        "12-21": { name: "Hollow One", image: "hollow-one.png", ritualLink: "/rituals/hollow-one" }
+      },
+      southern: {
+        "3-21": { name: "Emberseer", image: "emberseer.png", ritualLink: "/rituals/emberseer" },
+        "6-21": { name: "Seedbearer", image: "seedbearer.png", ritualLink: "/rituals/seedbearer" },
+        "9-21": { name: "Hollow One", image: "hollow-one.png", ritualLink: "/rituals/hollow-one" },
+        "12-21": { name: "Flamewalker", image: "flamewalker.png", ritualLink: "/rituals/flamewalker" }
+      }
+    }
+  };
+
+  function renderInhabitant(hemisphere, monthIndex) {
+    const targetId = `${hemisphere}-inhabitant`;
+    const guardian = inhabitants.guardians[hemisphere][key];
+    const data = guardian || inhabitants[hemisphere][monthIndex];
+
+    if (!data) {
+      document.getElementById(targetId).innerHTML = `
+        <div class="inhabitant-card">
+          <p style="color: red;">⚠️ Missing data for ${hemisphere} month ${monthIndex}</p>
+        </div>
+      `;
+      return;
+    }
+
+    document.getElementById(targetId).innerHTML = `
+      <div class="inhabitant-card${guardian ? ' guardian' : ''}">
+        <img src="images/${data.image}" alt="${data.name}" />
+        <h3>${data.name}</h3>
+        <a href="${data.ritualLink}" class="ritual-button">
+          ${guardian ? 'Seasonal Ritual' : 'Explore Present Ritual'}
+        </a>
+      </div>
+    `;
+  }
+
+  renderInhabitant("northern", seasonalMonthNorthern);
+  renderInhabitant("southern", seasonalMonthSouthern);
+</script>
+
+</body>
+</html>
